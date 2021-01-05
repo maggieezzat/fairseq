@@ -1,3 +1,13 @@
+cuda 11.0
+install pytorch using conda (not pip)
+
+pip install editdistance
+pip install pyarrow 
+pip install soundfile
+
+install kenlm 
+https://medium.com/tekraze/install-kenlm-binaries-on-ubuntu-language-model-inference-tool-33507000f33
+
 Issue:
 https://github.com/pytorch/fairseq/issues/3005
 
@@ -73,3 +83,22 @@ fairseq-hydra-train \
     distributed_training.distributed_world_size=4 +optimization.update_freq='[6]' \
     --config-dir examples/wav2vec/config/finetuning \
     --config-name base_1h
+
+/home/azureuser/data/fairseq/outputs/2021-01-05/14-56-31/checkpoints/checkpoint_last.pt
+$subset=valid
+python examples/speech_recognition/infer.py \
+/checkpoint/abaevski/data/speech/libri/10h/wav2vec/raw \
+--task audio_pretraining \
+--nbest 1 \ 
+--path /home/azureuser/data/fairseq/outputs/2021-01-05/14-56-31/checkpoints/checkpoint_last.pt \ 
+--gen-subset $subset \
+--results-path /path/to/save/results/for/sclite \
+--w2l-decoder kenlm \
+--lm-model /path/to/kenlm.bin \
+--lm-weight 2 \
+--word-score -1 \
+--sil-weight 0 \
+--criterion ctc \
+--labels ltr \
+--max-tokens 4000000 \
+--post-process letter
