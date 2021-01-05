@@ -12,6 +12,7 @@ checkpoint:
 task:
   _name: audio_pretraining
   data: ???
+  #modified normalize to match pre-training
   normalize: true
   labels: ltr
 
@@ -19,7 +20,8 @@ dataset:
   num_workers: 6
   max_tokens: 3200000
   skip_invalid_size_inputs_valid_test: true
-  valid_subset: dev_other
+  #modified valid subset name
+  valid_subset: valid
 
 distributed_training:
   ddp_backend: no_c10d
