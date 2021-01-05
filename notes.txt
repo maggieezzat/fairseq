@@ -1,0 +1,75 @@
+Issue:
+https://github.com/pytorch/fairseq/issues/3005
+
+For now, I added these keys to the config I used for training the base model:
+
+model:
+  _name: wav2vec2
+  quantize_targets: true
+  final_dim: 256
+  encoder_layerdrop: 0.05
+  dropout_input: 0.1
+  dropout_features: 0.1
+  dropout: 0.1
+  attention_dropout: 0.1
+  feature_grad_mult: 0.1
+
+  encoder_layers: 12
+  encoder_embed_dim: 768
+  encoder_ffn_embed_dim: 3072
+  encoder_attention_heads: 12
+
+
+I also experienced some problems during inference, caused by the script in fairseq/tasks/audio_pretraining
+
+        manifest = os.path.join(data_path, "{}.tsv".format(split))
+        self.datasets[split] = FileAudioDataset(
+            manifest,
+            sample_rate=task_cfg.sample_rate,
+            max_sample_size=self.cfg.max_sample_size,
+            min_sample_size=self.cfg.max_sample_size,
+            min_length=self.cfg.min_sample_size,
+            pad=task_cfg.labels is not None or task_cfg.enable_padding,
+            normalize=task_cfg.normalize,
+        )
+sample_rate and normalize are not attributes of task_cfg, so I fix it by:
+
+sample_rate=task_cfg.sample_rate ---> sample_rate=self.cfg.sample_rate
+normalize=False
+and also:
+
+# upgrade old task
+if isinstance(task_cfg, Namespace):
+    if not hasattr(task_cfg, "autoregressive"):
+        task_cfg.autoregressive = not task_cfg.criterion == 'ctc'
+task_cfg was not isinstance of Namespace. Therefore, task_cfg.autoregressive is not set after the above code, which caused some errors later. I fix it by removing the "if " condition:
+
+task_cfg.autoregressive = not task_cfg.criterion == 'ctc'
+
+
+#How to run?
+python examples/wav2vec/wav2vec_manifest.py /home/azureuser/data/test_waves --dest /home/azureuser/data/waves_fairseq --ext wav --valid-percent 0.01
+
+
+fairseq-hydra-train \
+    task.data=/home/azureuser/data/waves_fairseq \
+    distributed_training.distributed_world_size=4 +optimization.update_freq='[32]' \
+    --config-dir examples/wav2vec/config/pretraining \
+    --config-name wav2vec2_base_librispeech
+   
+
+
+python libri_labels.py /home/azureuser/data/waves_fairseq/train.tsv --output-dir /home/azureuser/data/labeled_data --output-name 'train'
+
+python libri_labels.py /home/azureuser/data/waves_fairseq/valid.tsv --output-dir /home/azureuser/data/labeled_data --output-name 'valid'
+
+
+/home/azureuser/data/fairseq/outputs/2021-01-05/12-38-10/checkpoints
+checkpoint_best.pt  checkpoint_last.pt  checkpoint_last.pt.tmp
+
+fairseq-hydra-train \
+    task.data=/home/azureuser/data/labeled_data \
+    model.w2v_path=/home/azureuser/data/fairseq/outputs/2021-01-05/12-38-10/checkpoints/checkpoint_best.pt \
+    distributed_training.distributed_world_size=4 +optimization.update_freq='[6]' \
+    --config-dir examples/wav2vec/config/finetuning \
+    --config-name base_1h
