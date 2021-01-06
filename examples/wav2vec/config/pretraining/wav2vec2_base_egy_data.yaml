@@ -15,6 +15,8 @@ task:
   data: ???
   max_sample_size: 250000
   min_sample_size: 32000
+  #add normalize = true
+  normalize: true
 
 dataset:
   num_workers: 6
@@ -53,3 +55,21 @@ model:
   dropout_input: 0.1
   dropout_features: 0.1
   feature_grad_mult: 0.1
+  #add additional model configs
+  extractor_mode: layer_norm
+  layer_norm_first: true
+  latent_temp: [2.0,0.1,0.999995]
+  #dropout: 0.0
+  dropout: 0.1
+  #attention_dropout: 0.0
+  attention_dropout: 0.1
+  conv_bias: true
+  #encoder_layers: 24
+  encoder_layers: 12
+  #encoder_embed_dim: 1024
+  encoder_embed_dim: 768
+  #encoder_ffn_embed_dim: 4096
+  encoder_ffn_embed_dim: 3072
+  #encoder_attention_heads: 16
+  encoder_attention_heads: 12  
+  

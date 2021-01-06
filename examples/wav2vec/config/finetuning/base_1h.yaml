@@ -6,7 +6,7 @@ common:
   log_interval: 200
 
 checkpoint:
-  #save_interval: 1000
+  save_interval: 1000
   save_interval_updates: 50
   keep_interval_updates: 1
   no_epoch_checkpoints: true
@@ -15,8 +15,7 @@ checkpoint:
 task:
   _name: audio_pretraining
   data: ???
-  #modified normalize to match pre-training
-  normalize: true
+  normalize: false
   labels: ltr
 
 dataset:
@@ -25,8 +24,7 @@ dataset:
   skip_invalid_size_inputs_valid_test: true
   validate_after_updates: 10000
   validate_interval: 1000
-  #modified valid subset name
-  valid_subset: valid
+  valid_subset: dev_other
 
 distributed_training:
   ddp_backend: no_c10d
