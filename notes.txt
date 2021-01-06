@@ -25,3 +25,9 @@ if isinstance(task_cfg, Namespace):
 task_cfg was not isinstance of Namespace. Therefore, task_cfg.autoregressive is not set after the above code, which caused some errors later. I fix it by removing the "if " condition:
 
 task_cfg.autoregressive = not task_cfg.criterion == 'ctc'
+
+
+COST OF PRETRAINING: 
+B ASE contains 12 transformer blocks, model dimension 768, inner dimension(FFN) 3,072 and 8 attention heads
+we train on a total of 64 V100 GPUs for 1.6 days (BASE on 960 hrs)
+

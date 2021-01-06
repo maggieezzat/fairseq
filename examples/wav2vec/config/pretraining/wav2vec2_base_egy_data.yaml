@@ -1,5 +1,9 @@
 # @package _group_
 
+# Check https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-train for 
+# interpretation of each parameter
+
+##################################################
 common:
   fp16: true
   log_format: json
@@ -9,21 +13,28 @@ checkpoint:
   save_interval_updates: 25000
   keep_interval_updates: 1
   no_epoch_checkpoints: true
+##################################################
 
 task:
   _name: audio_pretraining
   data: ???
+  #LARGE: We crop 320k audio samples, or 20sec
+  #BASE: Batches are built by cropping 250k audio samples, or 15.6sec,from each example
   max_sample_size: 250000
   min_sample_size: 32000
   #add normalize = true
   normalize: true
 
+##################################################
 dataset:
   num_workers: 6
   max_tokens: 1400000
   skip_invalid_size_inputs_valid_test: true
+##################################################
 
 distributed_training:
+  #BASE MODEL: we train on a total of **64** V100 GPUs for 1.6 days
+  #LARGE MODEL: we train on 128 V100 GPUs over 2.3 days for Librispeech and 5.2 days for LibriVox
   distributed_world_size: 64
   ddp_backend: no_c10d
 
@@ -34,7 +45,11 @@ criterion:
   loss_weights: [0.1, 10]
 
 optimization:
+  #LARGE trains for 250k updates and LARGE on LV-60k for 600k updates
+  #BASE for 400k updates
   max_update: 400000
+  #We optimize with Adam warming up the learning rate for the first 8% of updates to a peak of
+  #5 × 10−4 for BASE and 3 × 10−4 for LARGE , and then linearly decay it
   lr: [0.0005]
 
 optimizer:
@@ -45,8 +60,24 @@ optimizer:
 
 lr_scheduler:
   _name: polynomial_decay
+  #We optimize with Adam warming up the learning rate for the first 8% of updates to a peak of
+  #5 × 10−4 for BASE and 3 × 10−4 for LARGE , and then linearly decay it
+  #(8% of 400,000 = 32,000)
   warmup_updates: 32000
 
+#LARGE MODEL: (acc to paper)
+  #LARGE model contains 24 transformer blocks with model dimension 1,024, inner dimension
+  #4,096 and 16 attention heads
+  #We use dropout 0.1 in the Transformer, at the output of the feature encoder
+  #and the input to the quantization module. 
+  #Layers are dropped at a rate of 0.2 for LARGE
+
+#BASE MODEL:
+  #BASE contains 12 transformer blocks, model dimension 768, 
+  #inner dimension (FFN) 3,072 and 8 attention heads
+  #We use dropout 0.1 in the Transformer, at the output of the feature encoder
+  #and the input to the quantization module. 
+  #Layers are dropped at a rate of 0.05 for BASE
 model:
   _name: wav2vec2
   quantize_targets: true
@@ -59,17 +90,11 @@ model:
   extractor_mode: layer_norm
   layer_norm_first: true
   latent_temp: [2.0,0.1,0.999995]
-  #dropout: 0.0
   dropout: 0.1
-  #attention_dropout: 0.0
-  attention_dropout: 0.1
+  attention_dropout: 0.05
   conv_bias: true
-  #encoder_layers: 24
   encoder_layers: 12
-  #encoder_embed_dim: 1024
   encoder_embed_dim: 768
-  #encoder_ffn_embed_dim: 4096
   encoder_ffn_embed_dim: 3072
-  #encoder_attention_heads: 16
-  encoder_attention_heads: 12  
+  encoder_attention_heads: 8  
   
