@@ -3,12 +3,21 @@
 # Check https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-train for 
 # interpretation of each parameter
 
-##################################################
 common:
+  #fp16: Half-precision floating point format
+  #Decrease the required amount of memory
+  #Half-precision floating point format (FP16) uses 16 bits, compared to 32 bits for single precision (FP32). 
+  #Lowering the required memory enables training of larger models or training with larger mini-batches.
+  #Shorten the training or inference time
+  #Execution time can be sensitive to memory or arithmetic bandwidth. 
+  #Half-precision halves the number of bytes accessed, thus reducing the time spent in memory-limited layers. 
+  #NVIDIA GPUs offer up to 8x more half precision arithmetic throughput when compared to single-precision, 
+  #thus speeding up math-limited layers.
   fp16: true
   log_format: json
   log_interval: 200
 
+##################################################
 checkpoint:
   save_interval_updates: 25000
   keep_interval_updates: 1
@@ -25,12 +34,12 @@ task:
   #add normalize = true
   normalize: true
 
-##################################################
 dataset:
   num_workers: 6
+  #max_tokens: maximum number of tokens in a batch
+  #Crops are batched together to not exceed 1.4m samples per GPU
   max_tokens: 1400000
   skip_invalid_size_inputs_valid_test: true
-##################################################
 
 distributed_training:
   #BASE MODEL: we train on a total of **64** V100 GPUs for 1.6 days
