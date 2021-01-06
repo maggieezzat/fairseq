@@ -1,5 +1,8 @@
 # @package _group_
 
+# Check https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-train for 
+# interpretation of each parameter
+
 common:
   #fp16: Half-precision floating point format
   #Decrease the required amount of memory
