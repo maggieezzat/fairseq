@@ -1,0 +1,17 @@
+ubuntu 18.04
+cuda<=10.2 and >=9.2
+Anaconda3
+soundfile
+editdistance
+pyarrow
+packaging
+pytorch>=1.5
+nccl 
+apex
+fairseq
+cmake>=3.5.1
+make
+kenlm
+ATLAS
+BLAS
+FFTW3

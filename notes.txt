@@ -1,12 +1,3 @@
-cuda 11.0
-install pytorch using conda (not pip)
-
-pip install editdistance
-pip install pyarrow 
-pip install soundfile
-
-install kenlm 
-https://medium.com/tekraze/install-kenlm-binaries-on-ubuntu-language-model-inference-tool-33507000f33
 
 Issue:
 https://github.com/pytorch/fairseq/issues/3005
