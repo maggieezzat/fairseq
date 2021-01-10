@@ -17,14 +17,23 @@ common:
   log_format: json
   log_interval: 200
 
-##################################################
 checkpoint:
+  #save_interval: save a checkpoint every N epochs. Default: 1
   save_interval: 50
+  #save a checkpoint (and validate) every N updates. Default: 0
   save_interval_updates: 10000
+  #keep_interval_updates: keep the last N checkpoints saved with –save-interval-updates. Default: -1
   keep_interval_updates: 1
+  #no_epoch_checkpoints: only store last and best checkpoints
   no_epoch_checkpoints: true
+  #best_checkpoint_metric: metric to use for saving “best” checkpoints. Default: “loss”
   best_checkpoint_metric: wer
-##################################################
+  #save_dir: path to save checkpoints. Default: "checkpoints"
+  save_dir: "checkpoints_supervised"
+  #checkpoint_suffix: suffix to add to the checkpoint file name Default: ""
+  checkpoint_suffix: "_supervised_egy"
+  #restore_file: filename from which to load checkpoint. (default: <save-dir>/checkpoint_last.pt). Default: “checkpoint_last.pt”
+  #finetune_from_model: finetune from a pretrained model. note that meters and lr scheduler will be reset
 
 task:
   _name: audio_pretraining
