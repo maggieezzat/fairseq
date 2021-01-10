@@ -3,6 +3,11 @@
 # Check https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-train for 
 # interpretation of each parameter
 
+#COST OF PRETRAINING: 
+#BASE contains 12 transformer blocks, model dimension 768, inner dimension(FFN) 3,072 and 8 attention heads
+#we train on a total of 64 V100 GPUs for 1.6 days (BASE on 960 hrs)
+
+
 common:
   #fp16: Half-precision floating point format
   #Decrease the required amount of memory
