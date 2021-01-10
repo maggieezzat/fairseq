@@ -1,0 +1,119 @@
+# @package _group_
+
+# Check https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-train for 
+# interpretation of each parameter
+
+common:
+  #fp16: Half-precision floating point format
+  #Decrease the required amount of memory
+  #Half-precision floating point format (FP16) uses 16 bits, compared to 32 bits for single precision (FP32). 
+  #Lowering the required memory enables training of larger models or training with larger mini-batches.
+  #Shorten the training or inference time
+  #Execution time can be sensitive to memory or arithmetic bandwidth. 
+  #Half-precision halves the number of bytes accessed, thus reducing the time spent in memory-limited layers. 
+  #NVIDIA GPUs offer up to 8x more half precision arithmetic throughput when compared to single-precision, 
+  #thus speeding up math-limited layers.
+  fp16: true
+  log_format: json
+  log_interval: 200
+
+checkpoint:
+  #save_interval: save a checkpoint every N epochs. Default: 1
+  save_interval: 50
+  #save a checkpoint (and validate) every N updates. Default: 0
+  save_interval_updates: 25000
+  #keep_interval_updates: keep the last N checkpoints saved with –save-interval-updates. Default: -1
+  keep_interval_updates: 1
+  #no_epoch_checkpoints: only store last and best checkpoints
+  no_epoch_checkpoints: true
+  #best_checkpoint_metric: metric to use for saving “best” checkpoints. Default: “loss”
+  #save_dir: path to save checkpoints. Default: "checkpoints"
+  save_dir: "checkpoints_unsupervised"
+  #checkpoint_suffix: suffix to add to the checkpoint file name Default: ""
+  checkpoint_suffix: "_unsupervised_egy"
+  #restore_file: filename from which to load checkpoint. (default: <save-dir>/checkpoint_last.pt). Default: “checkpoint_last.pt”
+  #finetune_from_model: finetune from a pretrained model. note that meters and lr scheduler will be reset
+
+task:
+  _name: audio_pretraining
+  data: ???
+  #LARGE: We crop 320k audio samples, or 20sec
+  #BASE: Batches are built by cropping 250k audio samples, or 15.6sec,from each example
+  max_sample_size: 320000
+  min_sample_size: 32000
+  #add normalize = true
+  normalize: true
+
+dataset:
+  num_workers: 6
+  #max_tokens: maximum number of tokens in a batch
+  #Crops are batched together to not exceed 1.4m samples per GPU
+  max_tokens: 1200000
+  skip_invalid_size_inputs_valid_test: true
+
+distributed_training:
+  #BASE MODEL: we train on a total of **64** V100 GPUs for 1.6 days
+  #LARGE MODEL: we train on 128 V100 GPUs over 2.3 days for Librispeech and 5.2 days for LibriVox
+  distributed_world_size: 128
+  ddp_backend: no_c10d
+
+criterion:
+  _name: wav2vec
+  infonce: true
+  log_keys: ["prob_perplexity","code_perplexity","temp"]
+  loss_weights: [0.1, 0]
+
+optimization:
+  #LARGE trains for 250k updates and LARGE on LV-60k for 600k updates
+  #BASE for 400k updates
+  max_update: 1000000
+  #We optimize with Adam warming up the learning rate for the first 8% of updates to a peak of
+  #5 × 10−4 for BASE and 3 × 10−4 for LARGE , and then linearly decay it
+  lr: [0.005]
+
+optimizer:
+  _name: adam
+  adam_betas: (0.9,0.98)
+  adam_eps: 1e-06
+  weight_decay: 0.01
+
+lr_scheduler:
+  _name: polynomial_decay
+  #We optimize with Adam warming up the learning rate for the first 8% of updates to a peak of
+  #5 × 10−4 for BASE and 3 × 10−4 for LARGE , and then linearly decay it
+  #(8% of 400,000 = 32,000)
+  warmup_updates: 32000
+
+#LARGE MODEL: (acc to paper)
+  #LARGE model contains 24 transformer blocks with model dimension 1,024, inner dimension
+  #4,096 and 16 attention heads
+  #We use dropout 0.1 in the Transformer, at the output of the feature encoder
+  #and the input to the quantization module. 
+  #Layers are dropped at a rate of 0.2 for LARGE
+
+#BASE MODEL:
+  #BASE contains 12 transformer blocks, model dimension 768, 
+  #inner dimension (FFN) 3,072 and 8 attention heads
+  #We use dropout 0.1 in the Transformer, at the output of the feature encoder
+  #and the input to the quantization module. 
+  #Layers are dropped at a rate of 0.05 for BASE
+model:
+  _name: wav2vec2
+  quantize_targets: true
+  extractor_mode: layer_norm
+  layer_norm_first: true
+  final_dim: 768
+  latent_temp: [2.0,0.1,0.999995]
+  encoder_layerdrop: 0.00
+  dropout_input: 0.0
+  dropout_features: 0.0
+  dropout: 0.0
+  attention_dropout: 0.0
+  conv_bias: true
+  encoder_layers: 24
+  encoder_embed_dim: 1024
+  encoder_ffn_embed_dim: 4096
+  encoder_attention_heads: 16
+
+  feature_grad_mult: 1.0
+

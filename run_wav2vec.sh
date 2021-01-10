@@ -34,7 +34,7 @@ x=$(( $n_gpus_required/$n_gpus_actual ))
 data_path_pretrain="/home/azureuser/data/waves_fairseq"
 
 config_dir_pretrain="examples/wav2vec/config/pretraining"
-config_name_pretrain="wav2vec2_base_librispeech"
+config_name_pretrain="wav2vec2_base_egy_data"
 
 fairseq-hydra-train task.data=$data_path_pretrain \
     distributed_training.distributed_world_size=$n_gpus_actual +optimization.update_freq="[$x]" \
@@ -57,7 +57,7 @@ python libri_labels.py $valid_tsv --output-dir $output_dir --output-name 'valid'
 data_path_finetune="/home/azureuser/data/waves_fairseq"
 w2v_model="/path/to/model.pt"
 config_dir_finetune="examples/wav2vec/config/finetuning"
-config_name_finetune="wav2vec2_base_librispeech"
+config_name_finetune="base_egy_30h"
 
 #Note: you can simulate 24 GPUs by using k GPUs and adding command line parameters (before --config-dir) distributed_training.distributed_world_size=k +optimization.update_freq='[x]' where x = 24/k
 
