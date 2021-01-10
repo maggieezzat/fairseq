@@ -34,8 +34,6 @@ checkpoint:
   #restore_file: filename from which to load checkpoint. (default: <save-dir>/checkpoint_last.pt). Default: “checkpoint_last.pt”
   #finetune_from_model: finetune from a pretrained model. note that meters and lr scheduler will be reset
 
-Default: “”
-
 task:
   _name: audio_pretraining
   data: ???
