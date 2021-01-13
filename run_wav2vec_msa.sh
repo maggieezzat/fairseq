@@ -13,10 +13,10 @@
 ext="wav"  #ext should be set to flac, wav, or whatever format your dataset happens to use that soundfile can read.
 valid=0.01 #valid should be set to some reasonable percentage (like 0.01) of training data to use for validation.
 
-src_path="/home/azureuser/data/test_waves"
-dst_path="/home/azureuser/data/waves_fairseq"
+src_path="/home/azureuser/data/audio_data_processed/modern-standard-arabic"
+dst_path="/home/azureuser/data/wav2vec_data/modern-standard-arabic"
 
-python examples/wav2vec/wav2vec_manifest.py $src_path --dest $dst_path --ext $ext --valid-percent $valid
+python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext $ext --valid-percent $valid
 #########################################################################################################
 
 #Train a wav2vec 2.0 base model:
@@ -31,7 +31,7 @@ n_gpus_required=64
 n_gpus_actual=24
 x=$(( $n_gpus_required/$n_gpus_actual ))
 
-data_path_pretrain="/home/azureuser/data/waves_fairseq"
+data_path_pretrain="/home/azureuser/data/wav2vec_data/modern-standard-arabic"
 
 config_dir_pretrain="examples/wav2vec/config/pretraining"
 config_name_pretrain="wav2vec2_base_egy_data"
