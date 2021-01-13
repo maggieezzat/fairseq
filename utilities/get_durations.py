@@ -27,7 +27,7 @@ def main(args):
     for fname in glob.iglob(search_path, recursive=True):
         file_path = os.path.realpath(fname)
         dur = librosa.get_duration(filename=file_path)
-        print(dur)
+        #print(dur)
         seconds += dur
 
     hours = int(seconds // 3600)
