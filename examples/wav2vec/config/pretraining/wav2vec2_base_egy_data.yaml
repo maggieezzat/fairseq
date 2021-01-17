@@ -24,7 +24,7 @@ common:
 
 checkpoint:
   #save_interval: save a checkpoint every N epochs. Default: 1
-  save_interval: 50
+  #save_interval: 50
   #save a checkpoint (and validate) every N updates. Default: 0
   save_interval_updates: 25000
   #keep_interval_updates: keep the last N checkpoints saved with –save-interval-updates. Default: -1
