@@ -15,6 +15,10 @@
         if you encounter `Ensure there is enough space in /tmp and that the installation package is not corrupt`
         try making an empty directory `temp_dir` somewhere where you have plenty of space and run using:
         `sudo sh cuda_10.2.89_440.33.01_linux.run --tmpdir=/path/to/temp_dir` and follow the installation wizard
+    - make sure to add these 2 lines to the end of `~/.bashrc`:
+        - `export PATH="/usr/local/cuda-10.2/bin:$PATH"`
+        - `export LD_LIBRARY_PATH="/usr/local/cuda-10.2/lib64:$LD_LIBRARY_PATH"`
+    - `source ~/.bashrc`
 
 
 ### b) Setup Anaconda and Required Packages

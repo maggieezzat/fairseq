@@ -7,8 +7,7 @@
 
 #########################################################################################################
 # 1. Prepare training data manifest:
-#Given a directory containing wav files to be used for pretraining 
-#(we recommend splitting each file into separate file 10 to 30 seconds in length)
+#Given a directory containing wav files to be used for pretraining (we recommend splitting each file into separate file 10 to 30 seconds in length)
 
 ext="wav"  #ext should be set to flac, wav, or whatever format your dataset happens to use that soundfile can read.
 valid=0.01 #valid should be set to some reasonable percentage (like 0.01) of training data to use for validation.
@@ -19,16 +18,14 @@ dst_path="/home/azureuser/data/wav2vec_data/modern-standard-arabic"
 python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext $ext --valid-percent $valid
 #########################################################################################################
 
-#Train a wav2vec 2.0 base model:
+# 2. Train a wav2vec 2.0 base model:
 
-#This configuration was used for the base model trained on the Librispeech dataset in the wav2vec 2.0 paper
 #NOTE: that the input is expected to be single channel, sampled at 16 kHz
-
-#Note: you can simulate 64 GPUs by using k GPUs and adding command line parameters (before --config-dir) 
+#NOTE: you can simulate 64 GPUs by using k GPUs and adding command line parameters (before --config-dir) 
 #distributed_training.distributed_world_size=k +optimization.update_freq='[x]' where x = 64/k
 
 n_gpus_required=64
-n_gpus_actual=24
+n_gpus_actual=8
 x=$(( $n_gpus_required/$n_gpus_actual ))
 
 data_path_pretrain="/home/azureuser/data/wav2vec_data/modern-standard-arabic"
@@ -41,14 +38,22 @@ fairseq-hydra-train task.data=$data_path_pretrain \
     --config-dir $config_dir_pretrain --config-name $config_name_pretrain
 #########################################################################################################
 
-#Fine-tune a pre-trained model with CTC:
+# 3. Fine-tune a pre-trained model with CTC:
+
+#Prepare training data manifest:
+ext="wav" 
+valid=0.2
+src_path="/home/azureuser/data/supervised_data/modern-standard-arabic/train"
+dst_path="/home/azureuser/data/wav2letter_data"
+
+python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext $ext --valid-percent $valid
+
 #Fine-tuning a model requires parallel audio and labels file, as well as a vocabulary file in fairseq format. 
-
 #generate .wrd and .ltr and dict files using this script:
-train_tsv="/home/azureuser/data/waves_fairseq/train.tsv"
-valid_tsv="/home/azureuser/data/waves_fairseq/valid.tsv"
+train_tsv="/home/azureuser/data/wav2letter_data/train.tsv"
+valid_tsv="/home/azureuser/data/wav2letter_data/valid.tsv"
 
-output_dir="/home/azureuser/data/labeled_data"
+output_dir="/home/azureuser/data/wav2letter_data"
 
 python libri_labels.py $train_tsv --output-dir $output_dir --output-name 'train'
 python libri_labels.py $valid_tsv --output-dir $output_dir --output-name 'valid'
