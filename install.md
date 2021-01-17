@@ -48,6 +48,7 @@ note: you might need to change `cudatoolkit=10.2` to match your cuda version
 
 6. Install **SoundFile**
     - `pip install soundfile`
+    NOTE: on Linux, you need to install libsndfile using your distribution’s package manager, for example `sudo apt-get install libsndfile1`
 
 7. Install **Packaging**
     - `pip install packaging`
