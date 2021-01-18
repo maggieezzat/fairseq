@@ -27,7 +27,7 @@ def main():
 
     with open(args.trans, 'r') as f:
         for line in f:
-            line = line.strip().split()
+            line = line.strip().split(" ", 1)
             file_path = line[0]
             file_path = file_path.split("/")[-1]
             file_trans = line[1]
