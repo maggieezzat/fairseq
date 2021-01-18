@@ -29,8 +29,10 @@ def main():
         for line in f:
             line = line.strip().split()
             file_path = line[0]
+            file_path = file_path.split("/")[-1]
             file_trans = line[1]
             transcriptions[file_path] = file_trans
+    
     
     with open(args.tsv, "r") as tsv, open(
         os.path.join(args.output_dir, args.output_name + ".ltr"), "w"

@@ -60,12 +60,19 @@ python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext
 #Fine-tuning a model requires parallel audio and labels file, as well as a vocabulary file in fairseq format. 
 #generate .wrd and .ltr and dict files using this script:
 train_tsv="/home/maggie/data/wav2letter_data/modern-standard-arabic/train.tsv"
+train_trans="/home/maggie/data/audio_data_labelled/modern-standard-arabic/common_voice_ar/train_trans.txt"
+
 valid_tsv="/home/maggie/data/wav2letter_data/modern-standard-arabic/valid.tsv"
+valid_trans="/home/maggie/data/audio_data_labelled/modern-standard-arabic/common_voice_ar/dev_trans.txt"
+
+test_tsv="/home/maggie/data/wav2letter_data/modern-standard-arabic/test.tsv"
+test_trans="/home/maggie/data/audio_data_labelled/modern-standard-arabic/common_voice_ar/test_trans.txt"
 
 output_dir="/home/maggie/data/wav2letter_data/modern-standard-arabic"
 
-python msa_labels.py $train_tsv --output-dir $output_dir --output-name 'train'
-python msa_labels.py $valid_tsv --output-dir $output_dir --output-name 'valid'
+python examples/wav2vec/msa_labels.py $train_tsv $train_trans --output-dir $output_dir --output-name 'train'
+python examples/wav2vec/msa_labels.py $valid_tsv $valid_trans --output-dir $output_dir --output-name 'valid'
+python examples/wav2vec/msa_labels.py $test_tsv $test_trans --output-dir $output_dir --output-name 'test'
 
 #Fine-tuning with letter targets:
 data_path_finetune="/home/azureuser/data/waves_fairseq"
