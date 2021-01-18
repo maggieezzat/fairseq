@@ -15,6 +15,7 @@ import os
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("tsv")
+    parser.add_argument("trans", help="transcription file path")
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--output-name", required=True)
     args = parser.parse_args()
@@ -23,6 +24,13 @@ def main():
     
     transcriptions = {}
     labels = {}
+
+    with open(args.trans, 'r') as f:
+        for line in f:
+            line = line.strip().split()
+            file_path = line[0]
+            file_trans = line[1]
+            transcriptions[file_path] = file_trans
     
     with open(args.tsv, "r") as tsv, open(
         os.path.join(args.output_dir, args.output_name + ".ltr"), "w"
@@ -32,18 +40,15 @@ def main():
         root = next(tsv).strip()
         for line in tsv:
             line = line.strip()
-            dir = os.path.dirname(line)
-            if dir not in transcriptions:
-                trans_path = dir + ".trans.txt"
-                path = os.path.join(root, dir, trans_path)
-                assert os.path.exists(path)
-                texts = {}
-                with open(path, "r") as trans_f:
-                    for tline in trans_f:
-                        items = tline.strip().split(" ", 1)
-                        texts = items[1]
-                
-                transcriptions[dir] = texts
+            wav_path = line.split()[0]
+            if wav_path in transcriptions:
+                texts = transcriptions[wav_path]
+                print(texts, file=wrd_out)
+                print(
+                    " ".join(list(texts.replace(" ", "|"))) + " |",
+                    file=ltr_out,
+                )
+
                 if args.output_name == 'train':
                     words = texts.split()
                     for word in words:
@@ -54,11 +59,8 @@ def main():
                             else:
                                 labels[char] = 1
 
-            print(transcriptions[dir], file=wrd_out)
-            print(
-                " ".join(list(transcriptions[dir].replace(" ", "|"))) + " |",
-                file=ltr_out,
-            )
+            
+
     if args.output_name == 'train':
         labels = dict( sorted(labels.items(), key=lambda item: item[1], reverse=True))
         with open(os.path.join(args.output_dir, "dict.ltr.txt"), "w") as out:

@@ -28,7 +28,7 @@ n_gpus_required=64
 n_gpus_actual=8
 x=$(( $n_gpus_required/$n_gpus_actual ))
 
-data_path_pretrain="/home/azureuser/data/wav2vec_data/modern-standard-arabic"
+data_path_pretrain="/home/maggie/data/wav2vec_data/modern-standard-arabic"
 
 config_dir_pretrain="examples/wav2vec/config/pretraining"
 config_name_pretrain="wav2vec2_base_egy_data"
@@ -42,21 +42,30 @@ fairseq-hydra-train task.data=$data_path_pretrain \
 
 #Prepare training data manifest:
 ext="wav" 
-valid=0.2
-src_path="/home/azureuser/data/supervised_data/modern-standard-arabic/train"
-dst_path="/home/azureuser/data/wav2letter_data"
 
-python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext $ext --valid-percent $valid
+src_path="/home/maggie/data/audio_data_labelled/modern-standard-arabic/common_voice_ar/train"
+dst_path="/home/maggie/data/wav2letter_data/modern-standard-arabic"
+python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext $ext --valid-percent 0.0
+
+src_path="/home/maggie/data/audio_data_labelled/modern-standard-arabic/common_voice_ar/dev"
+dst_path="/home/maggie/data/wav2letter_data/modern-standard-arabic"
+python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext $ext --valid-percent 0.0
+
+src_path="/home/maggie/data/audio_data_labelled/modern-standard-arabic/common_voice_ar/test"
+dst_path="/home/maggie/data/wav2letter_data/modern-standard-arabic"
+python examples/wav2vec/wav2vec_manifest_egy.py $src_path --dest $dst_path --ext $ext --valid-percent 0.0
+
+
 
 #Fine-tuning a model requires parallel audio and labels file, as well as a vocabulary file in fairseq format. 
 #generate .wrd and .ltr and dict files using this script:
-train_tsv="/home/azureuser/data/wav2letter_data/train.tsv"
-valid_tsv="/home/azureuser/data/wav2letter_data/valid.tsv"
+train_tsv="/home/maggie/data/wav2letter_data/modern-standard-arabic/train.tsv"
+valid_tsv="/home/maggie/data/wav2letter_data/modern-standard-arabic/valid.tsv"
 
-output_dir="/home/azureuser/data/wav2letter_data"
+output_dir="/home/maggie/data/wav2letter_data/modern-standard-arabic"
 
-python libri_labels.py $train_tsv --output-dir $output_dir --output-name 'train'
-python libri_labels.py $valid_tsv --output-dir $output_dir --output-name 'valid'
+python msa_labels.py $train_tsv --output-dir $output_dir --output-name 'train'
+python msa_labels.py $valid_tsv --output-dir $output_dir --output-name 'valid'
 
 #Fine-tuning with letter targets:
 data_path_finetune="/home/azureuser/data/waves_fairseq"
