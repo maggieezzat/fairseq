@@ -78,7 +78,7 @@ python examples/wav2vec/msa_labels.py $test_tsv $test_trans --output-dir $output
 data_path_finetune="/home/azureuser/data/waves_fairseq"
 w2v_model="/path/to/model.pt"
 config_dir_finetune="examples/wav2vec/config/finetuning"
-config_name_finetune="base_egy_30h"
+config_name_finetune="base_msa_16h"
 
 #Note: you can simulate 24 GPUs by using k GPUs and adding command line parameters (before --config-dir) distributed_training.distributed_world_size=k +optimization.update_freq='[x]' where x = 24/k
 
@@ -87,6 +87,15 @@ fairseq-hydra-train task.data=$data_path_finetune model.w2v_path=$w2v_model \
 
 #NOTE: Decoding with a language model during training requires wav2letter python bindings. 
 #If you want to use a language model, add +criterion.wer_args='[/path/to/kenlm, /path/to/lexicon, 2, -1]' to the command line.
+#tuple of (wer_kenlm_model, wer_lexicon, wer_lm_weight, wer_word_score)
+#wer_args:DEPRECATED: tuple of (wer_kenlm_model, wer_lexicon, wer_lm_weight, wer_word_score)
+
+#wer_kenlm_model: if this is provided, use kenlm to compute wer (along with other wer_* args)
+#wer_lexicon: lexicon to use with wer_kenlm_model
+#wer_lm_weight: default=2.0, lm weight to use with wer_kenlm_model
+#wer_word_score: default=-1.0, lm word score to use with wer_kenlm_model
+
+
 #########################################################################################################
 
 #Evaluating a CTC model:
@@ -97,12 +106,18 @@ fairseq-hydra-train task.data=$data_path_finetune model.w2v_path=$w2v_model \
 #Letter dictionary for pre-trained models can be found here.
 #Next, run the evaluation command:
 
-model="/path/to/model"
-results_path="/path/to/save/results/for/sclite"
-kenlm_path="/path/to/kenlm.bin"
+#data to train wav2letter on
+data="/home/maggie/data/wav2letter_data/modern-standard-arabic"
+#w2v model
+model="/home/maggie/data/fairseq/outputs"
+#path ro store results in
+results_path="/home/maggie/data/msa_w2l_results"
+#binary lm path
+kenlm_path="/home/maggie/data/lm_data/modern-standard-arabic/msa_lm.binary"
+#subset of data to evaluate on
+$subset="test"
 
-$subset="valid"
-python examples/speech_recognition/infer.py /checkpoint/abaevski/data/speech/libri/10h/wav2vec/raw \
+python examples/speech_recognition/infer.py $data \
 --task audio_pretraining \
 --nbest 1 
 --path $model \

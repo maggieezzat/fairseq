@@ -1,0 +1,94 @@
+# @package _group_
+
+# Check https://fairseq.readthedocs.io/en/latest/command_line_tools.html#fairseq-train for 
+# interpretation of each parameter
+
+common:
+  #fp16: Half-precision floating point format
+  #Decrease the required amount of memory
+  #Half-precision floating point format (FP16) uses 16 bits, compared to 32 bits for single precision (FP32). 
+  #Lowering the required memory enables training of larger models or training with larger mini-batches.
+  #Shorten the training or inference time
+  #Execution time can be sensitive to memory or arithmetic bandwidth. 
+  #Half-precision halves the number of bytes accessed, thus reducing the time spent in memory-limited layers. 
+  #NVIDIA GPUs offer up to 8x more half precision arithmetic throughput when compared to single-precision, 
+  #thus speeding up math-limited layers.
+  fp16: true
+  log_format: json
+  log_interval: 200
+
+checkpoint:
+  #save_interval: save a checkpoint every N epochs. Default: 1
+  #save a checkpoint (and validate) every N updates. Default: 0
+  save_interval_updates: 10000
+  #keep_interval_updates: keep the last N checkpoints saved with –save-interval-updates. Default: -1
+  keep_interval_updates: 1
+  #no_epoch_checkpoints: only store last and best checkpoints
+  no_epoch_checkpoints: true
+  #best_checkpoint_metric: metric to use for saving “best” checkpoints. Default: “loss”
+  best_checkpoint_metric: wer
+  #save_dir: path to save checkpoints. Default: "checkpoints"
+  save_dir: "checkpoints_supervised"
+  #checkpoint_suffix: suffix to add to the checkpoint file name Default: ""
+  checkpoint_suffix: "_supervised_msa"
+  #restore_file: filename from which to load checkpoint. (default: <save-dir>/checkpoint_last.pt). Default: “checkpoint_last.pt”
+  #finetune_from_model: finetune from a pretrained model. note that meters and lr scheduler will be reset
+
+task:
+  _name: audio_pretraining
+  data: ???
+  #modified normalize to match pre-training
+  normalize: true
+  labels: ltr
+
+dataset:
+  num_workers: 8
+  #max_tokens: maximum number of tokens in a batch
+  #BASE uses a batch size of **3.2m** samples per GPU and we fine-tune on 8 GPUs, 
+  #giving a total batch size of 1,600sec.
+  max_tokens: 3200000
+  skip_invalid_size_inputs_valid_test: true
+  validate_after_updates: 10000
+  validate_interval: 50
+  #modified valid subset name
+  valid_subset: valid
+
+distributed_training:
+  ddp_backend: no_c10d
+  #BASE: we fine-tune on 8 GPUs
+  #LARGE: we fine-tune on 24 GPUs
+  distributed_world_size: 8
+
+criterion:
+  _name: ctc
+  zero_infinity: true
+
+optimization:
+  max_update: 20000
+  lr: [0.00005]
+  sentence_avg: true
+  update_freq: [4]
+
+optimizer:
+  _name: adam
+  adam_betas: (0.9,0.98)
+  adam_eps: 1e-08
+
+#We optimize with Adam and a tri-state rate schedule where the learning rate is warmed up for the first
+#10% of updates, held constant for the next 40% and then linearly decayed for the remainder.
+lr_scheduler:
+  _name: tri_stage
+  phase_ratio: [0.1, 0.4, 0.5]
+  final_lr_scale: 0.05
+
+model:
+  _name: wav2vec_ctc
+  w2v_path: ???
+  apply_mask: true
+  mask_prob: 0.65
+  mask_channel_prob: 0.5
+  mask_channel_length: 64
+  layerdrop: 0.05
+  activation_dropout: 0.1
+  feature_grad_mult: 0.0
+  freeze_finetune_updates: 10000
