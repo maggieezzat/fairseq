@@ -56,8 +56,6 @@ def main():
                     for word in words:
                         chars = list(word)
                         for char in chars:
-                            if not char.isalpha():
-                                continue
                             if char in labels.keys():
                                 labels[char] +=1
                             else:
