@@ -19,8 +19,9 @@ common:
 
 checkpoint:
   #save_interval: save a checkpoint every N epochs. Default: 1
+  save_interval: 50
   #save a checkpoint (and validate) every N updates. Default: 0
-  save_interval_updates: 10000
+  save_interval_updates: 1000
   #keep_interval_updates: keep the last N checkpoints saved with –save-interval-updates. Default: -1
   keep_interval_updates: 1
   #no_epoch_checkpoints: only store last and best checkpoints
@@ -48,7 +49,7 @@ dataset:
   #giving a total batch size of 1,600sec.
   max_tokens: 3200000
   skip_invalid_size_inputs_valid_test: true
-  validate_after_updates: 10000
+  validate_after_updates: 1000
   validate_interval: 50
   #modified valid subset name
   valid_subset: valid
