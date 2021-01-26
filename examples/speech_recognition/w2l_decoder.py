@@ -145,6 +145,9 @@ class W2lKenLMDecoder(W2lDecoder):
         self.trie = Trie(self.vocab_size, self.silence)
 
         start_state = self.lm.start(False)
+        with open('/home/maggie/data/tgt_dict.txt', 'w') as out:
+            for k, v in tgt_dict.items():
+                out.write(str(k) + " " + str(v) + '\n')
         for i, (word, spellings) in enumerate(self.lexicon.items()):
             word_idx = self.word_dict.get_index(word)
             _, score = self.lm.score(start_state, word_idx)
