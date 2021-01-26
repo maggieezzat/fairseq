@@ -140,19 +140,28 @@ class W2lKenLMDecoder(W2lDecoder):
         self.lexicon = load_words(args.lexicon)
         self.word_dict = create_word_dict(self.lexicon)
         self.unk_word = self.word_dict.get_index("<unk>")
+        print("##########################################")
+        print(type(self.lexicon))
+        print(self.lexicon)
+        print(type(self.word_dict))
+        print(self.word_dict)
+        print(type(self.unk_word))
+        print(self.unk_word)
+        print("TGT UNK")
+        print(tgt_dict.unk())
+        print("##########################################")
 
         self.lm = KenLM(args.kenlm_model, self.word_dict)
         self.trie = Trie(self.vocab_size, self.silence)
 
         start_state = self.lm.start(False)
-        #with open('/home/maggie/data/tgt_dict.txt', 'w') as out:
-        #    for k, v in tgt_dict.items():
-        #        out.write(str(k) + " " + str(v) + '\n')
+
         for i, (word, spellings) in enumerate(self.lexicon.items()):
             word_idx = self.word_dict.get_index(word)
             _, score = self.lm.score(start_state, word_idx)
             for spelling in spellings:
                 spelling_idxs = [tgt_dict.index(token) for token in spelling]
+                print(spelling_idxs)
                 assert (
                     tgt_dict.unk() not in spelling_idxs
                 ), f"{spelling} {spelling_idxs}"
