@@ -137,6 +137,7 @@ class W2lKenLMDecoder(W2lDecoder):
             if "<ctc_blank>" in tgt_dict.indices
             else tgt_dict.bos()
         )
+        tgt_dict.add_symbol('|')
         self.lexicon = load_words(args.lexicon)
         self.word_dict = create_word_dict(self.lexicon)
         self.unk_word = self.word_dict.get_index("<unk>")
