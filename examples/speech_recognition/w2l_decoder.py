@@ -149,6 +149,7 @@ class W2lKenLMDecoder(W2lDecoder):
         print(self.unk_word)
         print("TGT UNK")
         print(tgt_dict.unk())
+        print(tgt_dict.__getitem__(3))
         print("##########################################")
 
         self.lm = KenLM(args.kenlm_model, self.word_dict)
