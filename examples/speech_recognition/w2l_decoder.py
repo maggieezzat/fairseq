@@ -157,6 +157,9 @@ class W2lKenLMDecoder(W2lDecoder):
         start_state = self.lm.start(False)
 
         for i, (word, spellings) in enumerate(self.lexicon.items()):
+            print("****************************************")
+            print(word, spellings)
+            print("****************************************")
             word_idx = self.word_dict.get_index(word)
             _, score = self.lm.score(start_state, word_idx)
             for spelling in spellings:
