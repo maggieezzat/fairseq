@@ -142,7 +142,7 @@ class W2lKenLMDecoder(W2lDecoder):
         self.unk_word = self.word_dict.get_index("<unk>")
         print("##########################################")
         print(type(self.lexicon))
-        print(self.lexicon)
+        #print(self.lexicon)
         print(type(self.word_dict))
         print(self.word_dict)
         print(type(self.unk_word))
