@@ -165,6 +165,8 @@ class W2lKenLMDecoder(W2lDecoder):
             for spelling in spellings:
                 spelling_idxs = [tgt_dict.index(token) for token in spelling]
                 print(spelling_idxs)
+                print(tgt_dict.index("|"))
+                print(tgt_dict.index("<unk>"))
                 print(tgt_dict.unk() not in spelling_idxs)
                 assert (
                     tgt_dict.unk() not in spelling_idxs
