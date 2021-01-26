@@ -74,7 +74,7 @@ optimization:
   max_update: 400000
   #We optimize with Adam warming up the learning rate for the first 8% of updates to a peak of
   #5 × 10−4 for BASE and 3 × 10−4 for LARGE , and then linearly decay it
-  lr: [0.0005]
+  lr: [0.005]
 
 optimizer:
   _name: adam
@@ -87,7 +87,7 @@ lr_scheduler:
   #We optimize with Adam warming up the learning rate for the first 8% of updates to a peak of
   #5 × 10−4 for BASE and 3 × 10−4 for LARGE , and then linearly decay it
   #(8% of 400,000 = 32,000)
-  warmup_updates: 32000
+  warmup_updates: 64000
 
 #LARGE MODEL: (acc to paper)
   #LARGE model contains 24 transformer blocks with model dimension 1,024, inner dimension
