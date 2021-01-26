@@ -41,6 +41,8 @@ task:
   #modified normalize to match pre-training
   normalize: true
   labels: ltr
+  sample_rate: 16000
+  autoregressive: false
 
 dataset:
   num_workers: 8
