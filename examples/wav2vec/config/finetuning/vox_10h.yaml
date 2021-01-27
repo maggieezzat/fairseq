@@ -9,7 +9,7 @@ checkpoint:
   save_interval: 50
   save_interval_updates: 10000
   keep_interval_updates: 1
-  no_epoch_checkpoints: true
+  #no_epoch_checkpoints: true
   best_checkpoint_metric: wer
 
 task:
@@ -17,6 +17,8 @@ task:
   data: ???
   normalize: true
   labels: ltr
+  sample_rate: 16000
+  autoregressive: false
 
 dataset:
   num_workers: 6
@@ -24,7 +26,7 @@ dataset:
   skip_invalid_size_inputs_valid_test: true
   validate_after_updates: 10000
   validate_interval: 50
-  valid_subset: dev_other
+  valid_subset: valid
 
 distributed_training:
   ddp_backend: no_c10d
