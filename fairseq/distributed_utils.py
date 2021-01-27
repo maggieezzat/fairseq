@@ -319,6 +319,7 @@ def call_main(cfg: FairseqConfig, main, **kwargs):
                     torch.cuda.device_count(),
                     cfg.distributed_training.distributed_world_size,
                 ),
+                join=True,
             )
         else:
             distributed_main(cfg.distributed_training.device_id, main, cfg, kwargs)
