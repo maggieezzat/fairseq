@@ -53,6 +53,9 @@ note: you might need to change `cudatoolkit=10.2` to match your cuda version
 7. Install **Packaging**
     - `pip install packaging`
 
+8. Install correct installation of hydra and omegaconf
+    - `pip install -U omegaconf==2.0.5 hydra-core==1.0.4`
+
 ### c) Install NCCL
 1. Build using the following commands:
     - `git clone https://github.com/NVIDIA/nccl.git`
