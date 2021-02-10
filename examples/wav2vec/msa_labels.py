@@ -63,7 +63,6 @@ def main():
                                 labels[char] = 1
                     piped_sent = " ".join(list(texts.replace(" ", "|"))) + " |"
                     for ch in piped_sent:
-                        print(ch)
                         if ch == '|':
                             labels['|'] +=1
 
