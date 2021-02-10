@@ -24,6 +24,7 @@ def main():
     
     transcriptions = {}
     labels = {}
+    labels['|'] = 0
 
     with open(args.trans, 'r') as f:
         for line in f:
@@ -60,6 +61,9 @@ def main():
                                 labels[char] +=1
                             else:
                                 labels[char] = 1
+                    piped_sent = " ".join(list(texts.replace(" ", "|"))) + " |"
+                    for ch in piped_sent:
+                        print(ch)
 
             
 

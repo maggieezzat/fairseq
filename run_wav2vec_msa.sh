@@ -36,6 +36,22 @@ config_name_pretrain="wav2vec2_base_egy_data"
 fairseq-hydra-train task.data=$data_path_pretrain \
     distributed_training.distributed_world_size=$n_gpus_actual +optimization.update_freq="[$x]" \
     --config-dir $config_dir_pretrain --config-name $config_name_pretrain
+
+### FINETUNE WAV2VEC2 LARGE
+
+n_gpus_required=128
+n_gpus_actual=8
+x=$(( $n_gpus_required/$n_gpus_actual ))
+data_path_pretrain="/home/maggie/data/new_msa_data/w2v_manifest_dir"
+config_dir_pretrain="examples/wav2vec/config/pretraining"
+config_name_pretrain="wav2vec2_large_librivox"
+chpt="/home/maggie/data/xlsr_53_56k.pt"
+
+fairseq-hydra-train task.data=$data_path_pretrain \
+    checkpoint.restore_file=$chpt \
+    distributed_training.distributed_world_size=$n_gpus_actual +optimization.update_freq="[$x]" \
+    --config-dir $config_dir_pretrain --config-name $config_name_pretrain
+
 #########################################################################################################
 
 # 3. Fine-tune a pre-trained model with CTC:
