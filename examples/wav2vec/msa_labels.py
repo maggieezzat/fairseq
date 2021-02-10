@@ -64,8 +64,8 @@ def main():
                     piped_sent = " ".join(list(texts.replace(" ", "|"))) + " |"
                     for ch in piped_sent:
                         print(ch)
-
-            
+                        if ch == '|':
+                            labels['|'] +=1
 
     if args.output_name == 'train':
         labels = dict( sorted(labels.items(), key=lambda item: item[1], reverse=True))
