@@ -2,6 +2,7 @@ import librosa
 import argparse
 import glob
 import os
+from pathlib import Path
 
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -20,11 +21,15 @@ def get_parser():
 def main(args):
 
     dir_path = os.path.realpath(args.root)
-    search_path = os.path.join(dir_path, "**/*." + args.ext)
+    #search_path = os.path.join(dir_path, "**/*." + args.ext)
+    search_path = Path(dir_path).rglob(args.ext)
+    #################################################
 
     seconds = 0.0
 
-    for fname in glob.iglob(search_path, recursive=True):
+    #for fname in glob.iglob(search_path, recursive=True):
+    for fname in search_path:
+        #################################################
         file_path = os.path.realpath(fname)
         dur = librosa.get_duration(filename=file_path)
         #print(dur)
