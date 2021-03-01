@@ -54,7 +54,7 @@ def main(args):
 
     dir_path = os.path.realpath(args.root)
     #search_path = os.path.join(dir_path, "**/*." + args.ext)
-    search_path = Path(dir_path).rglob(args.ext)
+    search_path = Path(dir_path).rglob('*.' + args.ext)
     #################################################
     rand = random.Random(args.seed)
 
