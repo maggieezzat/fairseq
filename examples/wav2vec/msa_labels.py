@@ -30,7 +30,8 @@ def main():
         for line in f:
             line = line.strip().split(" ", 1)
             file_path = line[0]
-            #file_path = file_path.split("/")[-1]
+            file_path = file_path.split("/")
+            file_path = "/".join(file_path[1:])
             file_trans = line[1]
             transcriptions[file_path] = file_trans
     
