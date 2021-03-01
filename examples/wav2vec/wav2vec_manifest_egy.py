@@ -11,14 +11,13 @@ import argparse
 import glob
 import os
 import random
+from pathlib import Path
 
 import soundfile
 
 
 def get_parser():
     parser = argparse.ArgumentParser()
-
-    #parser.add_argument("--list", nargs="+", default=[], type=list, help="list of directories including wav files")
 
     parser.add_argument(
         "root", metavar="DIR", help="root directory containing wav files to index"
@@ -54,7 +53,9 @@ def main(args):
         os.makedirs(args.dest)
 
     dir_path = os.path.realpath(args.root)
-    search_path = os.path.join(dir_path, "**/*." + args.ext)
+    #search_path = os.path.join(dir_path, "**/*." + args.ext)
+    search_path = Path(dir_path).rglob(args.ext)
+    #################################################
     rand = random.Random(args.seed)
 
     with open(os.path.join(args.dest, "train.tsv"), "w") as train_f, open(
@@ -63,7 +64,9 @@ def main(args):
         print(dir_path, file=train_f)
         print(dir_path, file=valid_f)
 
-        for fname in glob.iglob(search_path, recursive=True):
+        #for fname in glob.iglob(search_path, recursive=True):
+        for fname in search_path:
+            #################################################
             file_path = os.path.realpath(fname)
 
             if args.path_must_contain and args.path_must_contain not in file_path:
