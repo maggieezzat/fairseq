@@ -21,8 +21,10 @@ def get_parser():
 def main(args):
 
     dir_path = os.path.realpath(args.root)
+    print(dir_path)
     #search_path = os.path.join(dir_path, "**/*." + args.ext)
     search_path = Path(dir_path).rglob(args.ext)
+    print(search_path)
     #################################################
 
     seconds = 0.0
