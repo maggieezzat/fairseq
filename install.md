@@ -1,6 +1,6 @@
 # Installations Guide
 
-### a) Install Cuda <=10.2 and >= 9.2
+### a) Install Cuda 10.2
 
 1. Remove any unsuitable cuda version
     - sudo apt-get purge nvidia*
