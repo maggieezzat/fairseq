@@ -17,16 +17,17 @@ data_path_pretrain="/home/maggie/data_ext/wav2vec_manifest"
 config_dir_pretrain="examples/wav2vec/config/pretraining"
 config_name_pretrain="wav2vec2_large_librivox"
 
-#from scratch:
-fairseq-hydra-train task.data=$data_path_pretrain \
-    distributed_training.distributed_world_size=$n_gpus_actual +optimization.update_freq="[$x]" \
-    --config-dir $config_dir_pretrain --config-name $config_name_pretrain
-
 #using xlsr:
 chpt='/home/maggie/data_ext/xlsr_53_56k.pt'
 
 fairseq-hydra-train task.data=$data_path_pretrain \
     checkpoint.restore_file=$chpt checkpoint.reset_dataloader='true'\
+    checkpoint.reset_lr_scheduler='true' checkpoint.reset_optimizer='true' checkpoint.reset_meters='true' \
+    distributed_training.distributed_world_size=$n_gpus_actual +optimization.update_freq="[$x]" \
+    --config-dir $config_dir_pretrain --config-name $config_name_pretrain
+
+#from scratch:
+fairseq-hydra-train task.data=$data_path_pretrain \
     distributed_training.distributed_world_size=$n_gpus_actual +optimization.update_freq="[$x]" \
     --config-dir $config_dir_pretrain --config-name $config_name_pretrain
 
